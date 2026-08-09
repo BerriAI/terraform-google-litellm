@@ -14,8 +14,7 @@ locals {
 }
 
 resource "google_compute_global_address" "lb" {
-  name   = "${local.name}-lb-ip"
-  labels = local.labels
+  name = "${local.name}-lb-ip"
 }
 
 # Serverless NEGs — one per Cloud Run service.
@@ -149,7 +148,6 @@ resource "google_compute_global_forwarding_rule" "http" {
   load_balancing_scheme = "EXTERNAL_MANAGED"
   ip_address            = google_compute_global_address.lb.address
   target                = google_compute_target_http_proxy.this.id
-  labels                = local.labels
 }
 
 # ---------- HTTPS (gated on var.lb_domains) ----------
@@ -162,21 +160,10 @@ resource "google_compute_global_forwarding_rule" "http" {
 
 resource "google_compute_managed_ssl_certificate" "this" {
   count = local.tls_enabled ? 1 : 0
-
-  # A managed cert's `domains` is immutable, so changing var.lb_domains
-  # forces replacement, and the cert is referenced by the HTTPS target
-  # proxy — a destroy-then-create replacement fails with
-  # `resourceInUseByAnotherResource`. Hashing the domains into the name
-  # makes the name change with the domain set, so create_before_destroy
-  # builds the new cert + repoints the proxy before deleting the old one.
-  name = "${local.name}-cert-${substr(sha1(join(",", var.lb_domains)), 0, 8)}"
+  name  = "${local.name}-cert"
 
   managed {
     domains = var.lb_domains
-  }
-
-  lifecycle {
-    create_before_destroy = true
   }
 }
 
@@ -195,5 +182,4 @@ resource "google_compute_global_forwarding_rule" "https" {
   load_balancing_scheme = "EXTERNAL_MANAGED"
   ip_address            = google_compute_global_address.lb.address
   target                = google_compute_target_https_proxy.this[0].id
-  labels                = local.labels
 }
