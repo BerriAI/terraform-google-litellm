@@ -144,15 +144,9 @@ variable "image_registry" {
 }
 
 variable "image_tag" {
-  description = "Tag applied to all four litellm-* images when composed from `image_registry`. A published module version ships with this stamped to its own release tag, which matches the `v`-prefixed tag published to GHCR for the same LiteLLM release. Set it to pin a different LiteLLM release. When sourcing the module from a git ref of the monorepo it has no default and must be set."
+  description = "Tag applied to all four litellm-* images when composed from `image_registry`. Bump in lockstep when bumping LiteLLM. Must match a tag actually published to GHCR — the split images use the `v`-prefixed semver convention (e.g. `v1.86.0-dev`)."
   type        = string
-  default     = "v1.107.0"
-  nullable    = false
-
-  validation {
-    condition     = !var.create_runtime || var.image_tag != "" || (var.gateway_image != "" && var.backend_image != "" && var.ui_image != "" && var.migrations_image != "")
-    error_message = "image_tag is empty. Published module versions (registry.terraform.io/modules/BerriAI/litellm) ship with it stamped to their own release. A git ref of the monorepo has no published images of its own, so set image_tag to a published LiteLLM release tag or set all four *_image URIs."
-  }
+  default     = "v1.106.2"
 }
 
 variable "gateway_image" {
