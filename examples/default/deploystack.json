@@ -25,7 +25,7 @@
     {
       "name": "image_tag",
       "description": "Tag for the four litellm-* images (gateway, backend, ui, migrations). Bump together when bumping LiteLLM",
-      "default": "v1.108.0-rc.1"
+      "default": "v1.109.0-dev.2"
     },
     {
       "name": "image_registry",
