@@ -85,7 +85,7 @@ variable "image_registry" {
 variable "image_tag" {
   description = "Tag of the litellm image every workload runs."
   type        = string
-  default     = "v1.111.0-dev.1"
+  default     = "v1.111.0-dev.2"
 }
 
 # TLS — provide DNS names for a managed cert, or opt into HTTP-only for dev.
