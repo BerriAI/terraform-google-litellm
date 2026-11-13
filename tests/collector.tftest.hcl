@@ -1,13 +1,12 @@
 # Plan-only coverage for the opt-in collector sidecar on the gateway Cloud
 # Run service. `mock_provider` keeps this offline: no GCP credentials, no API
-# calls. Run from litellm/deploy/terraform/litellm/gcp with `terraform test`.
+# calls. Run from terraform/litellm/gcp with `terraform test`.
 
 mock_provider "google" {}
 mock_provider "google-beta" {}
 mock_provider "random" {}
 
 variables {
-  image_tag          = "v9.9.9"
   project_id         = "acme-test"
   region             = "us-central1"
   tenant             = "acme"
@@ -65,14 +64,14 @@ run "enabled_adds_a_sidecar_that_shares_the_gateway_transport" {
 
   assert {
     condition = (
-      google_cloud_run_v2_service.gateway[0].template[0].containers[1].image == google_cloud_run_v2_service.gateway[0].template[0].containers[0].image &&
+      google_cloud_run_v2_service.gateway[0].template[0].containers[1].image == local.gateway_image &&
       google_cloud_run_v2_service.gateway[0].template[0].containers[1].command == tolist(["sh", "-c"]) &&
-      endswith(google_cloud_run_v2_service.gateway[0].template[0].containers[1].args[0], " && exec /app/docker-entrypoint.sh collector") &&
+      endswith(google_cloud_run_v2_service.gateway[0].template[0].containers[1].args[0], " && exec python -m litellm.proxy.collector") &&
       strcontains(google_cloud_run_v2_service.gateway[0].template[0].containers[1].args[0], "export DATABASE_URL=") &&
       strcontains(google_cloud_run_v2_service.gateway[0].template[0].containers[1].args[0], "REDIS_SSL_CA_CERTS") &&
       { for e in google_cloud_run_v2_service.gateway[0].template[0].containers[1].env : e.name => e.value }["LITELLM_JOB_ROLE"] == "collector"
     )
-    error_message = "The sidecar must run the collector component of the gateway's image with the same Redis CA + DATABASE_URL bootstrap as the gateway."
+    error_message = "The sidecar must run litellm.proxy.collector from the gateway image with the same Redis CA + DATABASE_URL bootstrap as the gateway."
   }
 
   assert {
