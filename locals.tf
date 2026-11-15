@@ -1,5 +1,5 @@
-# Gateway path prefixes — mirrored verbatim from gateway/routes/allowlist.py
-# and helm/litellm/templates/ingress.yaml. URL maps use the "path matcher"
+# Gateway path prefixes — mirrored verbatim from litellm/runtime/gateway/routes/allowlist.py
+# and litellm/deploy/helm/litellm/templates/ingress.yaml. URL maps use the "path matcher"
 # rule with `paths` lists; up to 10 path globs per rule, up to 50 rules
 # per matcher. Easily fits the gateway list in one rule per chunk-of-10.
 locals {
@@ -92,11 +92,5 @@ locals {
     { name = "PROXY_CONFIG_HASH", value = md5(local.proxy_config_yaml) },
   ] : []
 
-  # Resolved image URIs: per-component override wins, otherwise compose
-  # from image_registry + image_tag. Cloud Run only accepts AR / gcr.io /
-  # docker.io paths — see variables.tf for the full constraint list.
-  gateway_image    = var.gateway_image != "" ? var.gateway_image : "${var.image_registry}/litellm-gateway:${var.image_tag}"
-  backend_image    = var.backend_image != "" ? var.backend_image : "${var.image_registry}/litellm-backend:${var.image_tag}"
-  ui_image         = var.ui_image != "" ? var.ui_image : "${var.image_registry}/litellm-ui:${var.image_tag}"
-  migrations_image = var.migrations_image != "" ? var.migrations_image : "${var.image_registry}/litellm-migrations:${var.image_tag}"
+  image = var.image != "" ? var.image : "${var.image_registry}/litellm:${var.image_tag}"
 }
