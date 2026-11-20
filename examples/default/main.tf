@@ -1,6 +1,6 @@
 # One-command deploy of the LiteLLM GCP stack.
 #
-#   cd terraform/litellm/gcp/examples/default
+#   cd litellm/deploy/terraform/litellm/gcp/examples/default
 #   cp terraform.tfvars.example terraform.tfvars   # edit it
 #   terraform init
 #   terraform apply
@@ -10,7 +10,7 @@
 # from your own config with count/for_each or impersonated-SA providers:
 #
 #   module "litellm" {
-#     source  = "github.com/BerriAI/litellm//terraform/litellm/gcp?ref=<tag>"
+#     source  = "github.com/BerriAI/litellm//litellm/deploy/terraform/litellm/gcp?ref=<tag>"
 #     ...
 #   }
 #
@@ -21,7 +21,7 @@
 # "Using as a module" section.
 #
 # Knobs not surfaced as variables here (per-component sizing/instances,
-# Cloud SQL tier/edition, Memorystore tier, per-component image overrides)
+# Cloud SQL tier/edition, Memorystore tier, a full `image` override)
 # can be set directly on this block — see ../../variables.tf.
 module "litellm" {
   source = "../../"
