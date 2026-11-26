@@ -31,7 +31,7 @@ gcloud services enable \
 
 ## Create the Artifact Registry passthrough to GHCR
 
-Cloud Run only pulls from Artifact Registry, `gcr.io`, or `docker.io`; it rejects `ghcr.io` URIs at apply time. The LiteLLM image lives on GHCR, so the stack needs a remote Artifact Registry repo pointed at GHCR. This is a one-time setup per project.
+Cloud Run only pulls from Artifact Registry, `gcr.io`, or `docker.io`; it rejects `ghcr.io` URIs at apply time. The four LiteLLM images live on GHCR, so the stack needs a remote Artifact Registry repo pointed at GHCR. This is a one-time setup per project.
 
 ```bash
 gcloud artifacts repositories create litellm \
@@ -107,9 +107,9 @@ gateway_extra_secrets = {
 proxy_config = {
   model_list = [
     {
-      model_name = "gpt-6.1-sol"
+      model_name = "gpt-4o"
       litellm_params = {
-        model   = "openai/gpt-6.1-sol"
+        model   = "openai/gpt-4o"
         api_key = "os.environ/OPENAI_API_KEY"
       }
     },
